@@ -14,15 +14,17 @@ from typing import Any
 load_dotenv()
 
 catalyst = RagaAICatalyst(
-    access_key=os.getenv('CATALYST_ACCESS_KEY'), 
-    secret_key=os.getenv('CATALYST_SECRET_KEY'), 
-    base_url=os.getenv('CATALYST_BASE_URL')
-)
-
+    access_key="1q2igAYCIlpSBufkdB6f",
+    secret_key="yG6TJOgES8D9jAi9OI0X6SgvZNtkcFvkOruukJay",
+    base_url="https://llm-dev5.ragaai.ai/api")
+# project = catalyst.create_project(
+#     project_name="langgraph",
+#     usecase="Agentic Application"
+# )
 tracer = Tracer(
-    project_name=os.getenv('PROJECT_NAME'),
-    dataset_name=os.getenv('DATASET_NAME'),
-    tracer_type="agentic/crewai",
+    project_name='langgraph',
+    dataset_name='dataset',
+    tracer_type="Agentic",
 )
 init_tracing(catalyst=catalyst, tracer=tracer)
 
@@ -99,3 +101,8 @@ try:
         print(file.read())
 except FileNotFoundError:
     print("Story file not found. Check the writer agent's execution.")
+
+
+
+
+
