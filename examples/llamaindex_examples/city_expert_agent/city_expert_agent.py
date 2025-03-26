@@ -26,17 +26,16 @@ from ragaai_catalyst.tracers import Tracer
 
 from dotenv import load_dotenv
 load_dotenv()
-
 catalyst = RagaAICatalyst(
-    access_key=os.environ['CATALYST_ACCESS_KEY'], 
-    secret_key=os.environ['CATALYST_SECRET_KEY'], 
-    base_url=os.environ['CATALYST_BASE_URL']
+    access_key=os.getenv('CATALYST_ACCESS_KEY'), 
+    secret_key=os.getenv('CATALYST_SECRET_KEY'), 
+    base_url=os.getenv('CATALYST_BASE_URL')
 )
-
+# Initialize tracer
 tracer = Tracer(
-    project_name=os.environ['PROJECT_NAME'],
-    dataset_name=os.environ['DATASET_NAME'],
-    tracer_type="agentic/haystack",
+    project_name=os.getenv('PROJECT_NAME'),
+    dataset_name=os.getenv('DATASET_NAME'),
+    tracer_type="agentic/llamaindex",
 )
 
 init_tracing(catalyst=catalyst, tracer=tracer)
@@ -51,7 +50,7 @@ query_engines = {}
 # this is for the baseline
 all_nodes = []
 
-@tracer.trace_custom("fetch_wiki_data")
+
 def fetch_wiki_data(wiki_titles):
     for title in wiki_titles:
         response = requests.get(
@@ -74,7 +73,7 @@ def fetch_wiki_data(wiki_titles):
         with open(data_path / f"{title}.txt", "w") as fp:
             fp.write(wiki_text)
 
-@tracer.trace_custom("build_indexes_and_agents")
+
 def build_indexes_and_agents(wiki_titles, city_docs, node_parser):
     for idx, wiki_title in enumerate(wiki_titles):
         nodes = node_parser.get_nodes_from_documents(city_docs[wiki_title])

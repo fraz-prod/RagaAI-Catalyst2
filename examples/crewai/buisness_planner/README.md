@@ -21,7 +21,7 @@ The EcoSwap project is structured around three main agents, each responsible for
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/raga-ai-hub/RagaAI-Catalyst.git
-   cd examples/crewai
+   cd examples/crewai/business_planner
    ```
 
 2. **Install Dependencies**:

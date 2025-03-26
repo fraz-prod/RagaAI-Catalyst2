@@ -142,37 +142,46 @@ graph = workflow.compile(checkpointer=memory)
 
 # Use the graph
 
+# ... existing code ...
 
 # Use the graph
-cached_human_responses = ["hi!", "rag prompt", "1 rag, 2 none, 3 no, 4 no", "red", "q"]
-cached_response_index = 0
+# cached_human_responses = ["hi!", "rag prompt", "1 rag, 2 none, 3 no, 4 no", "red", "q"]
+# cached_response_index = 0
+# ... existing code ...
+
+# Use the graph
 config = {"configurable": {"thread_id": str(uuid.uuid4())}}
 
+# Interactive input loop
 while True:
-    try:
-        user = input("User (q/Q to quit): ")
-    except EOFError:
-        # Handle end of input stream
-        break
-
+    user = input("You: ")
     if user in {"q", "Q"}:
         print("AI: Byebye")
         break
 
-    output = None
-    for output in graph.stream(
-        {"messages": [HumanMessage(content=user)]}, config=config, stream_mode="updates"
-    ):
-        last_message = next(iter(output.values()))["messages"][-1]
-        last_message.pretty_print()
+    try:
+        output = None
+        # Process the user input and generate a response
+        for output in graph.stream(
+            {"messages": [HumanMessage(content=user)]}, config=config, stream_mode="updates"
+        ):
+            # Extract the last message from the output
+            last_message = next(iter(output.values()))["messages"][-1]
+            last_message.pretty_print()
 
-    if output and "prompt" in output:
-        print("Done!")
+        # Check if the output contains a prompt message
+        if output and "prompt" in output:
+            print("Done!")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 tracer.stop()
 tracer.get_upload_status()
 
+# ... existing code ...
 
 
 tracer.stop()
 tracer.get_upload_status()
+
+# ... existing code ...# ... existing code ...

@@ -20,16 +20,15 @@ from ragaai_catalyst.tracers import Tracer
 def initialize_catalyst():
     """Initialize RagaAI Catalyst using environment credentials."""
     catalyst = RagaAICatalyst(
-        access_key=os.getenv('CATALYST_ACCESS_KEY'), 
-        secret_key=os.getenv('CATALYST_SECRET_KEY'), 
-        base_url=os.getenv('CATALYST_BASE_URL')
-    )
+    access_key="1q2igAYCIlpSBufkdB6f",
+    secret_key="yG6TJOgES8D9jAi9OI0X6SgvZNtkcFvkOruukJay",
+    base_url="https://llm-dev5.ragaai.ai/api")
     
     tracer = Tracer(
-        project_name=os.environ['PROJECT_NAME'],
-        dataset_name=os.environ['DATASET_NAME'],
-        tracer_type="agentic/langgraph",
-    )
+    project_name='langgraph',
+    dataset_name='dataset',
+    tracer_type="Agentic",
+)
     
     init_tracing(catalyst=catalyst, tracer=tracer)
     

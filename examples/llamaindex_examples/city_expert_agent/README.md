@@ -13,17 +13,17 @@ This project uses the Llama Index and RagaAI Catalyst to create specialized agen
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - An OpenAI API key
-- A RagaAI Catalyst account
+
 
 ### Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/city-expert-agent.git
-   cd city-expert-agent
+   git clone https://github.com/raga-ai-hub/RagaAI-Catalyst.git
+   cd examples/llamaindex_examples/city_expert_agent
    ```
 
 2. Install the required packages:
@@ -45,7 +45,7 @@ This project uses the Llama Index and RagaAI Catalyst to create specialized agen
 1. Run the script:
 
    ```bash
-   python llama.py
+   python city_expert_agent.py
    ```
 
 2. The script will fetch Wikipedia data, build indexes, and create agents. It will then use the top agent to answer a sample query about Boston.

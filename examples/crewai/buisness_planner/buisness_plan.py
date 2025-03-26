@@ -1,49 +1,46 @@
-import sys
-sys.path.append('.')
-
+import os
 from ragaai_catalyst import RagaAICatalyst, init_tracing
 from ragaai_catalyst.tracers import Tracer
-import os
 from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process
-from typing import Any
-import json
-from datetime import datetime
+from crewai.tools import tool
+
 
 load_dotenv()
 
 # Initialize RagaAI Catalyst
 catalyst = RagaAICatalyst(
-    access_key=os.getenv('CATALYST_ACCESS_KEY'),
-    secret_key=os.getenv("CATALYST_SECRET_KEY"),
-    base_url=os.getenv('CATALYST_BASE_URL'))
-
+    access_key=os.getenv('CATALYST_ACCESS_KEY'), 
+    secret_key=os.getenv('CATALYST_SECRET_KEY'), 
+    base_url=os.getenv('CATALYST_BASE_URL')
+)
+# Initialize tracer
 tracer = Tracer(
-    project_name='financial_expert4',
-    dataset_name='dataset',
-    tracer_type="Agentic",
+    project_name=os.getenv('PROJECT_NAME'),
+    dataset_name=os.getenv('DATASET_NAME'),
+    tracer_type="agentic/llamaindex",
 )
 init_tracing(catalyst=catalyst, tracer=tracer)
 
+@tool
 def write_to_file(filename: str, content: str) -> str:
     """Write content to a file with the specified filename."""
     with open(filename, "w") as f:
         f.write(content)
     return f"Content successfully written to {filename}"
 
-@tracer.trace_agent("market_research_analyst")
-def create_market_researcher_agent():
-    return Agent(
-        role="Market Research Analyst",
-        goal="Identify market opportunities and analyze potential business ideas",
-        backstory="You are an experienced market analyst with expertise in identifying profitable business opportunities and market gaps.",
-        verbose=True,
-        allow_delegation=False
-    )
 
-@tracer.trace_agent("buisness_strategist")
-def create_buisness_strategy():
-    return Agent(
+market_researcher = Agent(
+    role="Market Research Analyst",
+    goal="Identify market opportunities and analyze potential business ideas",
+    backstory="You are an experienced market analyst with expertise in identifying profitable business opportunities and market gaps.",
+    verbose=True,
+    allow_delegation=False
+        )
+
+
+
+buisness_strategy = Agent(
         role="Business Strategist",
         goal="Develop a comprehensive business strategy and revenue model",
         backstory="You are a strategic thinker with experience in business model development and strategic planning.",
@@ -51,9 +48,9 @@ def create_buisness_strategy():
         allow_delegation=False
     )
 
-@tracer.trace_agent("financial_planner")
-def create_financial_planner():
-    return Agent(
+
+
+financial_planner=Agent(
         role="Financial Planner",
         goal="Create detailed financial projections and write the complete business plan",
         backstory="You are a financial expert skilled in creating business plans and financial forecasts.",
@@ -61,31 +58,31 @@ def create_financial_planner():
         allow_delegation=False
     )
 
-@tracer.trace_custom("research_task")
-def create_research_task(market_researcher):
-    return Task(
+
+
+research_task= Task(
         description="""Conduct market research and propose a innovative business idea. 
                     Include target market, problem being solved, and unique value proposition.""",
         expected_output="A detailed market analysis and business idea proposal (2-3 paragraphs).",
         agent=market_researcher
     )
 
-@tracer.trace_custom("strategy_task")
-def create_strategy_task(business_strategist, research_task):
-    return Task(
+
+
+create_strategy_task=Task(
         description="""Develop a business strategy including:
                     - Business model
                     - Revenue streams
                     - Marketing approach
                     - Competitive analysis""",
         expected_output="A comprehensive business strategy document with all key components.",
-        agent=business_strategist,
+        agent=buisness_strategy,
         context=[research_task]
     )
 
-@tracer.trace_custom("planning_task")
-def create_planning_task(financial_planner, strategy_task):
-    return Task(
+
+
+create_planning_task= Task(
         description="""Create a complete business plan including:
                     - Executive summary
                     - Financial projections
@@ -93,24 +90,23 @@ def create_planning_task(financial_planner, strategy_task):
                     Save the final plan as 'business_plan.md'""",
         expected_output="A markdown file containing the complete business plan.",
         agent=financial_planner,
-        context=[strategy_task]
+        context=[create_strategy_task]
     )
-
 def main():
     # Create agents
-    market_researcher = create_market_researcher_agent()
-    business_strategist = create_buisness_strategy()
-    financial_planner = create_financial_planner()
+    researcher = market_researcher
+    strategist = buisness_strategy
+    planner = financial_planner
 
-    # Create tasks
-    research_task = create_research_task(market_researcher)
-    strategy_task = create_strategy_task(business_strategist, research_task)
-    planning_task = create_planning_task(financial_planner, strategy_task)
+
+    market_research = research_task
+    strategy = create_strategy_task
+    planning = create_planning_task
 
     # Create and configure crew
     crew = Crew(
-        agents=[market_researcher, business_strategist, financial_planner],
-        tasks=[research_task, strategy_task, planning_task],
+        agents=[researcher, strategist, planner],
+        tasks=[market_research, strategy, planning],
         process=Process.sequential,
         verbose=True
     )
